@@ -1,4 +1,4 @@
-# Ultimate Attachment
+# Odoo Ultimate Attachment
 
 An Odoo module that provides a custom attachment widget for uploading, previewing, and managing attachments directly from form views.
 
