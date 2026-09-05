@@ -4,6 +4,10 @@ An Odoo module that provides a custom attachment widget for uploading, previewin
 
 The module provides a thumbnail-based interface for `many2many` attachment fields, with support for image and PDF previews.
 
+## Screenshot
+
+![Ultimate Attachment Screenshot](static/description/screenshot1.png)
+
 ## Features
 
 * Upload multiple attachments at once.
@@ -123,10 +127,6 @@ Form view:
 ```
 
 The widget will display attachments in a grid similar to:
-
-## Screenshot
-
-![Ultimate Attachment Screenshot](static/description/screenshot1.png)
 
 ## Uploading Attachments
 
