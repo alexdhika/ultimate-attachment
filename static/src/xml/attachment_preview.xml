@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-name="ultimate_attachment.AttachmentPreview">
+
+        <div class="o_attachment_preview" style="position: relative;">
+
+            <!-- Loading Overlay -->
+            <t t-if="state.loading">
+                <div
+                    style="
+                        position: absolute;
+                        inset: 0;
+                        z-index: 100;
+                        background: rgba(255, 255, 255, 0.65);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    "
+                >
+                    <div
+                        class="spinner-border"
+                        role="status"
+                        style="width: 3rem; height: 3rem;"
+                    >
+                        <span class="visually-hidden">
+                            Loading...
+                        </span>
+                    </div>
+                </div>
+            </t>
+            
+            <!-- Upload -->
+            <input
+                t-ref="fileInput"
+                type="file"
+                multiple="multiple"
+                style="display: none;"
+                t-on-change="onFileChange"
+            />
+
+            <!-- Preview attachments -->
+            <div class="d-flex flex-wrap gap-3">
+            
+                <t
+                    t-foreach="state.attachments"
+                    t-as="attachment"
+                    t-key="attachment.id"
+                >
+            
+                    <div
+                        class="border rounded p-2"
+                        style="width: 140px;"
+                    >
+            
+                        <!-- Preview Container -->
+                        <div
+                            style="
+                                position: relative;
+                                width: 120px;
+                            "
+                        >
+            
+                            <!-- Delete Button -->
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-danger"
+                                style="
+                                    position: absolute;
+                                    top: 4px;
+                                    left: 4px;
+                                    z-index: 10;
+                                    width: 28px;
+                                    height: 28px;
+                                    padding: 0;
+                                    border-radius: 50%;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                "
+                                t-on-click.stop="() => this.removeAttachment(attachment)"
+                                title="Delete"
+                            >
+                                <i class="fa fa-trash"/>
+                            </button>
+            
+                            <!-- Preview -->
+                            <div
+                                t-on-click="() => this.preview(attachment)"
+                                style="cursor: pointer;"
+                            >
+            
+                                <!-- Image -->
+                                <t t-if="isImage(attachment)">
+                                    <img
+                                        t-att-src="getUrl(attachment)"
+                                        style="
+                                            width: 120px;
+                                            height: 100px;
+                                            object-fit: cover;
+                                            border-radius: 4px;
+                                        "
+                                    />
+                                </t>
+            
+                                <!-- PDF -->
+                                <t t-elif="isPdf(attachment)">
+                                    <div
+                                        style="
+                                            width: 120px;
+                                            height: 100px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            background: #f5f5f5;
+                                            border-radius: 4px;
+                                        "
+                                    >
+                                        <i class="fa fa-file-pdf-o fa-4x"/>
+                                    </div>
+                                </t>
+            
+                                <!-- Other file -->
+                                <t t-else="">
+                                    <div
+                                        style="
+                                            width: 120px;
+                                            height: 100px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            background: #f5f5f5;
+                                            border-radius: 4px;
+                                        "
+                                    >
+                                        <i class="fa fa-file-o fa-4x"/>
+                                    </div>
+                                </t>
+            
+                                <!-- File Name -->
+                                <div
+                                    class="text-truncate mt-2"
+                                    t-att-title="attachment.name"
+                                >
+                                    <t t-esc="attachment.name"/>
+                                </div>
+            
+                            </div>
+            
+                        </div>
+            
+                    </div>
+            
+                </t>
+            
+                <div
+                    class="border rounded p-2 attachment-upload-box"
+                    style="
+                        width: 140px;
+                        height: 150px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: #f8f9fa;
+                        border-style: dashed !important;
+                    "
+                    t-on-click="openFilePicker"
+                    title="Upload attachment"
+                >
+                    <div
+                        class="text-center attachment-upload-content"
+                    >
+                        <i
+                            class="fa fa-plus"
+                            style="font-size: 40px;"
+                        />
+                
+                        <div class="mt-2">
+                            Upload
+                        </div>
+                    </div>
+                </div>
+            
+            </div>
+            
+
+
+            <!-- Preview Modal -->
+            <t t-if="state.preview">
+
+                <div
+                    class="modal d-block"
+                    style="background: rgba(0, 0, 0, 0.7);"
+                    t-on-click="closePreview"
+                >
+
+                    <div
+                        class="modal-dialog modal-xl modal-dialog-centered"
+                        t-on-click.stop=""
+                    >
+
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+
+                                <h5 class="modal-title">
+                                    <t t-esc="state.preview.name"/>
+                                </h5>
+
+                                <button
+                                    type="button"
+                                    class="btn-close"
+                                    t-on-click="closePreview"
+                                />
+
+                            </div>
+
+                            <div
+                                class="modal-body text-center"
+                                style="min-height: 500px;"
+                            >
+
+                                <t t-if="isImage(state.preview)">
+
+                                    <img
+                                        t-att-src="getUrl(state.preview)"
+                                        style="
+                                            max-width: 100%;
+                                            max-height: 70vh;
+                                            object-fit: contain;
+                                        "
+                                    />
+
+                                </t>
+
+                                <t t-elif="isPdf(state.preview)">
+
+                                    <iframe
+                                        t-att-src="getUrl(state.preview)"
+                                        style="
+                                            width: 100%;
+                                            height: 70vh;
+                                            border: none;
+                                        "
+                                    />
+
+                                </t>
+
+                                <t t-else="">
+
+                                    <div class="py-5">
+
+                                        <i class="fa fa-file-o fa-5x mb-4"/>
+
+                                        <h5>
+                                            File tidak memiliki preview
+                                        </h5>
+
+                                        <a
+                                            t-att-href="getUrl(state.preview)"
+                                            class="btn btn-primary mt-3"
+                                            download=""
+                                        >
+                                            <i class="fa fa-download"/>
+                                            Download
+                                        </a>
+
+                                    </div>
+
+                                </t>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+        </div>
+
+    </t>
+
+</templates>

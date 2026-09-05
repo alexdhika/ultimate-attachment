@@ -1,0 +1,13 @@
+.attachment-upload-box {
+    transition: all 0.2s ease;
+}
+
+.attachment-upload-box:hover {
+    background: #e9ecef !important;
+    border-color: #6c757d !important;
+    transform: scale(1.03);
+}
+
+.attachment-upload-box:hover .attachment-upload-content {
+    color: #212529 !important;
+}
